@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Vitesse</title>
+    <meta charset="UTF-8" />
+
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="index.scss" />
+  </head>
+  <body>
+    <div class="container-sm text-center">
+      <div class="px-2 px-sm-0">
+        <h1 class="heading-first">Type de transmission</h1>
+      </div>
+      <div
+        class="select-next-step-bg px-2 pt-3 pb-4 py-lg-3 d-flex flex-column justify-content-between mt-3"
+      >
+        <h3 class="subheading-second">
+          Sélectionnez le type de transmission de votre véhicule
+        </h3>
+        <div class="vehicle-details mt-3 text-left">
+          <p>
+            <span
+              class="oi oi-car"
+              style="font-size: 16px; margin-right: 5px"
+            ></span
+            ><strong>Marque :</strong> <span id="brand"></span>
+          </p>
+          <p>
+            <span
+              class="oi oi-document"
+              style="font-size: 16px; margin-right: 5px"
+            ></span
+            ><strong>Modèle :</strong> <span id="model"></span>
+          </p>
+          <p>
+            <span
+              class="oi oi-calendar"
+              style="font-size: 16px; margin-right: 5px"
+            ></span
+            ><strong>Année :</strong> <span id="year"></span>
+          </p>
+          <p>
+            <span
+              class="oi oi-calendar"
+              style="font-size: 16px; margin-right: 5px"
+            ></span
+            ><strong>Mois :</strong> <span id="month"></span>
+          </p>
+          <p>
+            <span
+              class="oi oi-fuel"
+              style="font-size: 16px; margin-right: 5px"
+            ></span
+            ><strong>Carburant :</strong> <span id="fuel"></span>
+          </p>
+          <p>
+            <span
+              class="oi oi-document"
+              style="font-size: 16px; margin-right: 5px"
+            ></span
+            ><strong>Type :</strong> <span id="type"></span>
+          </p>
+          <p>
+            <span
+              class="oi oi-door"
+              style="font-size: 16px; margin-right: 5px"
+            ></span
+            ><strong>Portes :</strong> <span id="porte"></span>
+          </p>
+          <div class="registration-details">
+            <div class="vitesse-buttons">
+              <!-- Vitesse buttons will be populated by JS -->
+            </div>
+          </div>
+          <p>
+            <strong>Transmission sélectionnée :</strong>
+            <span id="selected-vitesse"></span>
+          </p>
+        </div>
+        <div class="mt-4">
+          <div class="d-flex justify-content-between mb-3">
+            <button class="btn btn-secondary" id="js-precedent">
+              Précédent
+            </button>
+            <button class="btn btn-primary" id="js-continuer" disabled>
+              Continuer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const brandValue = urlParams.get("brand");
+        const modelValue = urlParams.get("model");
+        const yearValue = urlParams.get("year");
+        const monthValue = urlParams.get("month");
+        const fuelValue = urlParams.get("fuel");
+        const typeValue = urlParams.get("type");
+        const porteValue = urlParams.get("porte");
+        const vitesseButtonsContainer =
+          document.querySelector(".vitesse-buttons");
+        const selectedVitesseElement =
+          document.getElementById("selected-vitesse");
+        const continuerButton = document.getElementById("js-continuer");
+        const precedentButton = document.getElementById("js-precedent");
+        const brandElement = document.getElementById("brand");
+        const modelElement = document.getElementById("model");
+        const yearElement = document.getElementById("year");
+        const monthElement = document.getElementById("month");
+        const fuelElement = document.getElementById("fuel");
+        const typeElement = document.getElementById("type");
+        const porteElement = document.getElementById("porte");
+
+        // Set brand, model, year, month, fuel, type, and porte from URL parameters
+        const brandData = {
+          84: "Renault",
+          82: "Peugeot",
+          59: "Citroën",
+          81: "Opel",
+          92: "Volkswagen",
+          plus: "Autre",
+          10: "Audi",
+          11: "BMW",
+          12: "Mercedes",
+          13: "Toyota",
+          14: "Honda",
+        };
+        brandElement.textContent = brandData[brandValue] || "Inconnu";
+        modelElement.textContent = modelValue || "Inconnu";
+        yearElement.textContent = yearValue || "Inconnu";
+        monthElement.textContent = monthValue || "Inconnu";
+        fuelElement.textContent = fuelValue || "Inconnu";
+        typeElement.textContent = typeValue || "Inconnu";
+        porteElement.textContent = porteValue || "Inconnu";
+
+        // Populate vitesse buttons
+        const vitesses = ["Manuelle", "Automatique"];
+        vitesses.forEach((vitesse) => {
+          const button = document.createElement("button");
+          button.textContent = vitesse;
+          button.className = "btn vitesse-btn";
+          button.addEventListener("click", () => {
+            selectedVitesseElement.textContent = vitesse;
+            updateContinueButton();
+          });
+          vitesseButtonsContainer.appendChild(button);
+        });
+
+        function updateContinueButton() {
+          continuerButton.disabled = !selectedVitesseElement.textContent;
+        }
+
+        continuerButton.addEventListener("click", () => {
+          const vitesse = selectedVitesseElement.textContent;
+          if (vitesse) {
+            window.location.href = `/puissance.html?brand=${encodeURIComponent(
+              brandValue
+            )}&model=${encodeURIComponent(
+              modelValue
+            )}&year=${encodeURIComponent(yearValue)}&month=${encodeURIComponent(
+              monthValue
+            )}&fuel=${encodeURIComponent(fuelValue)}&type=${encodeURIComponent(
+              typeValue
+            )}&porte=${encodeURIComponent(
+              porteValue
+            )}&vitesse=${encodeURIComponent(vitesse)}`;
+          }
+        });
+
+        precedentButton.addEventListener("click", () => {
+          const urlParams = new URLSearchParams(window.location.search);
+          const brand = urlParams.get("brand");
+          const model = urlParams.get("model");
+          const year = urlParams.get("year");
+          const month = urlParams.get("month");
+          const fuel = urlParams.get("fuel");
+          const type = urlParams.get("type");
+          const porte = urlParams.get("porte");
+          if (brand && model && year && month && fuel && type && porte) {
+            window.location.href = `/porte.html?brand=${encodeURIComponent(
+              brand
+            )}&model=${encodeURIComponent(model)}&year=${encodeURIComponent(
+              year
+            )}&month=${encodeURIComponent(month)}&fuel=${encodeURIComponent(
+              fuel
+            )}&type=${encodeURIComponent(type)}&porte=${encodeURIComponent(
+              porte
+            )}`;
+          } else {
+            window.location.href = "/porte.html";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Carburant</title>
+    <meta charset="UTF-8" />
+
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="index.scss" />
+  </head>
+  <body>
+    <div class="container-sm text-center">
+      <div class="px-2 px-sm-0">
+        <h1 class="heading-first">Type de carburant</h1>
+      </div>
+      <div
+        class="select-next-step-bg px-2 pt-3 pb-4 py-lg-3 d-flex flex-column justify-content-between mt-3"
+      >
+        <h3 class="subheading-second">
+          Sélectionnez le type de carburant de votre véhicule
+        </h3>
+        <div class="vehicle-details mt-3 text-left">
+          <p>
+            <span
+              class="oi oi-car"
+              style="font-size: 16px; margin-right: 5px"
+            ></span
+            ><strong>Marque :</strong> <span id="brand"></span>
+          </p>
+          <p>
+            <span
+              class="oi oi-document"
+              style="font-size: 16px; margin-right: 5px"
+            ></span
+            ><strong>Modèle :</strong> <span id="model"></span>
+          </p>
+          <p>
+            <span
+              class="oi oi-calendar"
+              style="font-size: 16px; margin-right: 5px"
+            ></span
+            ><strong>Année :</strong> <span id="year"></span>
+          </p>
+          <p>
+            <span
+              class="oi oi-calendar"
+              style="font-size: 16px; margin-right: 5px"
+            ></span
+            ><strong>Mois :</strong> <span id="month"></span>
+          </p>
+          <div class="registration-details">
+            <div class="fuel-buttons">
+              <!-- Fuel buttons will be populated by JS -->
+            </div>
+          </div>
+          <p>
+            <strong>Carburant sélectionné :</strong>
+            <span id="selected-fuel"></span>
+          </p>
+        </div>
+        <div class="mt-4">
+          <div class="d-flex justify-content-between mb-3">
+            <button class="btn btn-secondary" id="js-precedent">
+              Précédent
+            </button>
+            <button class="btn btn-primary" id="js-continuer" disabled>
+              Continuer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const brandValue = urlParams.get("brand");
+        const modelValue = urlParams.get("model");
+        const yearValue = urlParams.get("year");
+        const monthValue = urlParams.get("month");
+        const fuelButtonsContainer = document.querySelector(".fuel-buttons");
+        const selectedFuelElement = document.getElementById("selected-fuel");
+        const continuerButton = document.getElementById("js-continuer");
+        const precedentButton = document.getElementById("js-precedent");
+        const brandElement = document.getElementById("brand");
+        const modelElement = document.getElementById("model");
+        const yearElement = document.getElementById("year");
+        const monthElement = document.getElementById("month");
+
+        // Set brand, model, year, and month from URL parameters
+        const brandData = {
+          84: "Renault",
+          82: "Peugeot",
+          59: "Citroën",
+          81: "Opel",
+          92: "Volkswagen",
+          plus: "Autre",
+          10: "Audi",
+          11: "BMW",
+          12: "Mercedes",
+          13: "Toyota",
+          14: "Honda",
+        };
+        brandElement.textContent = brandData[brandValue] || "Inconnu";
+        modelElement.textContent = modelValue || "Inconnu";
+        yearElement.textContent = yearValue || "Inconnu";
+        monthElement.textContent = monthValue || "Inconnu";
+
+        // Populate fuel buttons
+        const fuels = ["ESSENCE", "DIESEL"];
+        fuels.forEach((fuel) => {
+          const button = document.createElement("button");
+          button.textContent = fuel;
+          button.className = "btn fuel-btn";
+          button.addEventListener("click", () => {
+            selectedFuelElement.textContent = fuel;
+            updateContinueButton();
+          });
+          fuelButtonsContainer.appendChild(button);
+        });
+
+        function updateContinueButton() {
+          continuerButton.disabled = !selectedFuelElement.textContent;
+        }
+
+        continuerButton.addEventListener("click", () => {
+          const fuel = selectedFuelElement.textContent;
+          if (fuel) {
+            window.location.href = `/type.html?brand=${encodeURIComponent(
+              brandValue
+            )}&model=${encodeURIComponent(
+              modelValue
+            )}&year=${encodeURIComponent(yearValue)}&month=${encodeURIComponent(
+              monthValue
+            )}&fuel=${encodeURIComponent(fuel)}`;
+          }
+        });
+
+        precedentButton.addEventListener("click", () => {
+          const urlParams = new URLSearchParams(window.location.search);
+          const brand = urlParams.get("brand");
+          const model = urlParams.get("model");
+          const year = urlParams.get("year");
+          const month = urlParams.get("month");
+          if (brand && model && year && month) {
+            window.location.href = `/annee.html?brand=${encodeURIComponent(
+              brand
+            )}&model=${encodeURIComponent(model)}&year=${encodeURIComponent(
+              year
+            )}&month=${encodeURIComponent(month)}`;
+          } else {
+            window.location.href = "/annee.html";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

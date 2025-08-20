@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Annee</title>
+    <meta charset="UTF-8" />
+
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="index.scss" />
+  </head>
+  <body>
+    <div class="container-sm text-center">
+      <div class="px-2 px-sm-0">
+        <h1 class="heading-first">Détails supplémentaires</h1>
+      </div>
+      <div
+        class="select-next-step-bg px-2 pt-3 pb-4 py-lg-3 d-flex flex-column justify-content-between mt-3"
+      >
+        <h3 class="subheading-second">
+          Ajoutez des détails sur votre véhicule
+        </h3>
+        <div class="vehicle-details mt-3 text-left">
+          <p>
+            <span
+              class="oi oi-car"
+              style="font-size: 16px; margin-right: 5px"
+            ></span
+            ><strong>Marque :</strong> <span id="brand"></span>
+          </p>
+          <p>
+            <span
+              class="oi oi-document"
+              style="font-size: 16px; margin-right: 5px"
+            ></span
+            ><strong>Modèle :</strong> <span id="model"></span>
+          </p>
+          <div class="registration-details">
+            <div class="year-buttons">
+              <!-- Year buttons will be populated by JS -->
+            </div>
+            <div class="month-buttons">
+              <!-- Month buttons will be populated by JS -->
+            </div>
+          </div>
+          <p>
+            <strong>Année sélectionnée :</strong>
+            <span id="selected-year"></span>
+          </p>
+          <p>
+            <strong>Mois sélectionné :</strong>
+            <span id="selected-month"></span>
+          </p>
+        </div>
+        <div class="mt-4">
+          <div class="d-flex justify-content-between mb-3">
+            <button class="btn btn-secondary" id="js-precedent">
+              Précédent
+            </button>
+            <button class="btn btn-primary" id="js-continuer" disabled>
+              Continuer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const brandValue = urlParams.get("brand");
+        const modelValue = urlParams.get("model");
+        const yearButtonsContainer = document.querySelector(".year-buttons");
+        const monthButtonsContainer = document.querySelector(".month-buttons");
+        const selectedYearElement = document.getElementById("selected-year");
+        const selectedMonthElement = document.getElementById("selected-month");
+        const continuerButton = document.getElementById("js-continuer");
+        const precedentButton = document.getElementById("js-precedent");
+        const brandElement = document.getElementById("brand");
+        const modelElement = document.getElementById("model");
+
+        // Set brand and model from URL parameters
+        const brandData = {
+          84: "Renault",
+          82: "Peugeot",
+          59: "Citroën",
+          81: "Opel",
+          92: "Volkswagen",
+          plus: "Autre",
+          10: "Audi",
+          11: "BMW",
+          12: "Mercedes",
+          13: "Toyota",
+          14: "Honda",
+        };
+        brandElement.textContent = brandData[brandValue] || "Inconnu";
+        modelElement.textContent = modelValue || "Inconnu";
+
+        // Populate year buttons (2015-2025)
+        const years = Array.from(
+          { length: 2025 - 2015 + 1 },
+          (_, i) => 2015 + i
+        );
+        years.forEach((year) => {
+          const button = document.createElement("button");
+          button.textContent = year;
+          button.className = "btn year-btn";
+          button.addEventListener("click", () => {
+            selectedYearElement.textContent = year;
+            updateContinueButton();
+          });
+          yearButtonsContainer.appendChild(button);
+        });
+
+        // Populate month buttons (Jan-Dec)
+        const months = [
+          "Jan",
+          "Fév",
+          "Mar",
+          "Avr",
+          "Mai",
+          "Juin",
+          "Juil",
+          "Aoû",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Déc",
+        ];
+        months.forEach((month) => {
+          const button = document.createElement("button");
+          button.textContent = month;
+          button.className = "btn month-btn";
+          button.addEventListener("click", () => {
+            selectedMonthElement.textContent = month;
+            updateContinueButton();
+          });
+          monthButtonsContainer.appendChild(button);
+        });
+
+        function updateContinueButton() {
+          continuerButton.disabled =
+            !selectedYearElement.textContent ||
+            !selectedMonthElement.textContent;
+        }
+
+        continuerButton.addEventListener("click", () => {
+          const year = selectedYearElement.textContent;
+          const month = selectedMonthElement.textContent;
+          if (year && month) {
+            window.location.href = `/carburant.html?brand=${encodeURIComponent(
+              brandValue
+            )}&model=${encodeURIComponent(
+              modelValue
+            )}&year=${encodeURIComponent(year)}&month=${encodeURIComponent(
+              month
+            )}`;
+          }
+        });
+
+        precedentButton.addEventListener("click", () => {
+          const urlParams = new URLSearchParams(window.location.search);
+          const brand = urlParams.get("brand");
+          const model = urlParams.get("model");
+          if (brand && model) {
+            window.location.href = `/estimation.html?brand=${encodeURIComponent(
+              brand
+            )}&model=${encodeURIComponent(model)}`;
+          } else {
+            window.location.href = "/estimation.html";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

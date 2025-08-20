@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Estimation</title>
+    <meta charset="UTF-8" />
+
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="index.scss" />
+  </head>
+  <body>
+    <div class="container-sm text-center">
+      <div class="px-2 px-sm-0">
+        <h1 class="heading-first">Choisissez le modèle</h1>
+      </div>
+      <div
+        class="select-model-bg px-2 pt-3 pb-4 py-lg-3 d-flex flex-column justify-content-between mt-3"
+      >
+        <h3 class="subheading-second">
+          Sélectionnez le modèle de votre véhicule
+        </h3>
+        <div class="model-list">
+          <select
+            class="form-control custom-model-select"
+            id="model-select"
+            required
+          >
+            <option value="">Modèle</option>
+          </select>
+        </div>
+        <div class="mt-4">
+          <div class="d-flex justify-content-between mb-3">
+            <button class="btn btn-secondary" id="js-precedent">
+              Précédent
+            </button>
+            <button class="btn btn-primary" id="js-continuer" disabled>
+              Continuer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const brandValue = urlParams.get("brand");
+        const plateValue = urlParams.get("plate");
+        const modelSelect = document.getElementById("model-select");
+        const continuerButton = document.getElementById("js-continuer");
+        const precedentButton = document.getElementById("js-precedent");
+
+        const modelData = {
+          84: ["Clio", "Megane", "Captur"], // Renault
+          82: ["208", "308", "3008"], // Peugeot
+          59: ["C3", "C4", "C5"], // Citroën
+          81: ["Corsa", "Astra", "Insignia"], // Opel
+          92: ["Golf", "Passat", "Tiguan"], // Volkswagen
+          plus: ["Non spécifié"], // Autre
+          10: ["A3", "A4", "Q5"], // Audi
+          11: ["1 Series", "3 Series", "X1"], // BMW
+          12: ["C-Class", "E-Class", "GLC"], // Mercedes
+          13: ["Corolla", "Camry", "RAV4"], // Toyota
+          14: ["Civic", "CR-V", "Accord"], // Honda
+        };
+
+        let selectedBrand =
+          brandValue ||
+          (plateValue && getBrandFromPlate(plateValue)) ||
+          "Inconnu";
+        if (selectedBrand === "Inconnu" && !brandValue && !plateValue) {
+          window.location.href = "/";
+          return;
+        }
+
+        function getBrandFromPlate(plate) {
+          const plateData = {
+            "AB-123-CD": "82", // Peugeot
+            "XY-456-EF": "84", // Renault
+            "AZ-123-ZZ": "59", // Citroën
+          };
+          return plateData[plate] || "Inconnu";
+        }
+
+        const models = modelData[selectedBrand] || ["Non spécifié"];
+        models.forEach((model) => {
+          const option = document.createElement("option");
+          option.value = model;
+          option.textContent = model;
+          modelSelect.appendChild(option);
+        });
+
+        // Hide the default "Modèle" option after first interaction
+        modelSelect.addEventListener("click", () => {
+          const defaultOption = modelSelect.querySelector('option[value=""]');
+          if (defaultOption) {
+            defaultOption.style.display = "none";
+          }
+        });
+
+        modelSelect.addEventListener("change", () => {
+          continuerButton.disabled = !modelSelect.value;
+        });
+
+        continuerButton.addEventListener("click", () => {
+          const selectedModel = modelSelect.value;
+          if (selectedModel) {
+            window.location.href = `/Annee.html?brand=${encodeURIComponent(
+              selectedBrand
+            )}&model=${encodeURIComponent(selectedModel)}`;
+          }
+        });
+
+        precedentButton.addEventListener("click", () => {
+          const urlParams = new URLSearchParams(window.location.search);
+          const brand = urlParams.get("brand");
+          const plate = urlParams.get("plate");
+          if (brand) {
+            window.location.href = `/details-vehicule.html?brand=${encodeURIComponent(
+              brand
+            )}`;
+          } else if (plate) {
+            window.location.href = `/details-vehicule.html?plate=${encodeURIComponent(
+              plate
+            )}`;
+          } else {
+            window.location.href = "/details-vehicule.html";
+          }
+        });
+
+        // Pre-select if coming from plate
+        if (plateValue) {
+          const plateData = {
+            "AB-123-CD": "208",
+            "XY-456-EF": "Clio",
+            "AZ-123-ZZ": "C3",
+          };
+          const defaultModel = plateData[plateValue];
+          if (defaultModel && models.includes(defaultModel)) {
+            modelSelect.value = defaultModel;
+            continuerButton.disabled = false;
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
